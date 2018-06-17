@@ -1,0 +1,24 @@
+{
+  "name": "hangremote",
+  "version": "1.0.0",
+  "description": "Hangremote",
+  "main": "js/popup.html",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "gulp": "3.0.0",
+    "gulp-csso": "^3.0.1",
+    "gulp-eslint": "^4.0.2",
+    "gulp-uglify": "^3.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/cheluskis/hangremote.git"
+  },
+  "author": "Marcelo Rossi /github.com/cheluskis",
+  "license": "AGPL-3.0",
+  "homepage": "https://bitbucket.org/cheluskis/hangremote#readme"
+}
