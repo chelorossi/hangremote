@@ -19,7 +19,7 @@ var paths = {
 };
 
 function copyAssets() {
-  return gulp.src(['./src/popup.html', 'icons/**']).
+  return gulp.src(['./manifest.json', './src/popup.html', 'icons/**'], {base: '.'}).
         pipe(gulp.dest('./build/'));
 }
 

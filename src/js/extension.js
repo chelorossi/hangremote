@@ -1,6 +1,7 @@
 /*global document chrome console*/
 
 var systemState = {'toggleMic': false, toggleCam: false}; //buttons state
+var tabUrls = null;
 
 chrome.runtime.onInstalled.addListener(function() {
   sendToggle({action: 'init'});
@@ -28,7 +29,7 @@ function updateButton(button, $tagDiv, $tagSpan) {
 }
 
 function sendToggle(button) {
-  chrome.tabs.query({url: "https://hangouts.google.com/*"}, function(results) {
+  chrome.tabs.query({url: tabUrls}, function(results) {
     if (results.length == 0) {
       chrome.tabs.create({url: 'http://g.co/hangouts'}, function() {
           //chrome.tabs.executeScript(tab.id,{file: "buy.js"});
@@ -97,8 +98,10 @@ window.addEventListener('load', init);
 
 
 function init() {
-  chrome.tabs.query({url: "https://hangouts.google.com/*"}, function(results) {
-//    console.log('#tabs abiertas ' + results.length);
+  var manifestData = chrome.runtime.getManifest();
+  tabUrls = manifestData.content_scripts[0].matches;
+
+  chrome.tabs.query({url: tabUrls}, function(results) {
     if (results.length == 0) {
       document.getElementsByClassName("icons")[0].style.display = 'none';
       loadSettings(false);

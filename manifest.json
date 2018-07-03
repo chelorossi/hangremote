@@ -3,7 +3,7 @@
 
   "name": "Hangremote",
   "description": "This extension provides remote control for Google Hangouts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "background": {
     "scripts": ["src/js/commands.js"],
     "persistent": false
@@ -11,7 +11,10 @@
 
   "content_scripts": [
     {
-      "matches": ["*://hangouts.google.com/*"],
+      "matches": [
+        "*://*.google.com/hangouts*",
+        "*://*.google.com/call*"      
+      ],
       "js": ["src/js/content.js"]
     }
   ],
