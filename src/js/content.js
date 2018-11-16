@@ -57,11 +57,14 @@ var syncButtonsBind = function () {
 var setSelectorByHoVersion = function () {
   var isHoBeta = document.querySelector('div[role="button"][jsname="gbbhzb"]') !== null;
   var isHoOriginal = document.querySelector('.ha-w-P-y-Xi-f') !== null;
+  var isMeet = document.location.hostname === 'meet.google.com';
 
   if (isHoOriginal) {
       version = 'HoOriginal';
   } else if (isHoBeta) {
       version = 'HoBeta';
+  } else if (isMeet) {
+      version = 'Meet';
   } else {
       return false;
   }
@@ -94,6 +97,10 @@ var elements =
         'selector': 'div[role="button"][jsname="YczAdf"]',
         'flag': '.YczAdf'
       }
+    },
+    Meet: {
+      microphone: { 'selector': 'div[data-capture-type="mic"][data-is-muted] > div[role="button"][data-is-muted]' },
+      camera: { 'selector': 'div[data-capture-type="cam"][data-is-muted] > div[role="button"][data-is-muted]' }
     }
   }
 

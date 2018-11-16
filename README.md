@@ -31,10 +31,6 @@ To build:
 $ gulp
 ```
 
-### Todos
-
- - Google Meet Support
-
 Acknowledgements
 ----
 [MuteDefaults](https://github.com/jjshoe/MuteDefaults)
