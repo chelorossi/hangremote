@@ -99,8 +99,8 @@ var elements =
       }
     },
     Meet: {
-      microphone: { 'selector': 'div[data-capture-type="mic"][data-is-muted] > div[role="button"][data-is-muted]' },
-      camera: { 'selector': 'div[data-capture-type="cam"][data-is-muted] > div[role="button"][data-is-muted]' }
+      microphone: { 'selector': 'div[role="button"][data-is-muted][aria-label^="Turn o"][aria-label$="microphone"]' },
+      camera: { 'selector': 'div[role="button"][data-is-muted][aria-label^="Turn o"][aria-label$="camera"]' }
     }
   }
 
