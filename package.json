@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "^4.19.1",
-    "gulp": "3.0.0",
+    "gulp": "^4.0.0",
     "gulp-csso": "^3.0.1",
     "gulp-eslint": "^4.0.2",
     "gulp-uglify": "^3.0.0"

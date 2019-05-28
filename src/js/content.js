@@ -1,19 +1,22 @@
 /*global document chrome*/
 var version = 'unknown';
 
-var init = function() {
+var init = function () {
   setSelectorByHoVersion();
   var retries = 0;
   var handle = setInterval(function () {
     if (version !== 'unknown') {
-      var microphoneSelector = elements[version]['microphone'].selector;
-      var cameraSelector = elements[version]['camera'].selector;
-      hookHangouts(microphoneSelector, cameraSelector);
+      var elem = elements[version] // eslint-disable-line no-undef
+      var microphoneSelector = elem['microphone'].selector;
+      var microphoneIndex = elem['microphone'].index;
+      var cameraSelector = elem['camera'].selector;
+      var cameraIndex = elem['camera'].index;
+      hookHangouts(microphoneSelector, microphoneIndex, cameraSelector, cameraIndex);
       syncButtonsBind();
     }
     if (retries < 6 && version === 'unknown') {
       setSelectorByHoVersion();
-      retries+=1;
+      retries += 1;
     } else {
       clearInterval(handle);
     }
@@ -23,33 +26,39 @@ var init = function() {
 
 window.addEventListener("load", function load() {
   init();
-},false);
+}, false);
 
 
-chrome.runtime.onMessage.addListener( function(request) {
+chrome.runtime.onMessage.addListener(function (request) {
+  var elem = elements[version] // eslint-disable-line no-undef
+
   if (request.action == 'toggleMic') {
-    toggleMic(elements[version]['microphone'].selector);
+    toggleMic(elem['microphone'].selector, elem['microphone'].index);
   } else if (request.action == 'toggleCam') {
-    toggleCam(elements[version]['camera'].selector);
+    toggleCam(elem['camera'].selector, elem['camera'].index);
   } else if (request.action == 'mute') {
-    toggleCam(elements[version]['camera'].selector);
+    toggleCam(elem['camera'].selector, elem['camera'].index);
   }
   return true;
 });
 
 var syncButtonsBind = function () {
+  var elem = elements[version] // eslint-disable-line no-undef
 
-  chrome.storage.sync.set({'toggleMic': false});
-  document.querySelector(elements[version]['microphone'].selector).addEventListener('mousedown', function() {
-    chrome.storage.sync.get('toggleMic', function (result) {
-      chrome.storage.sync.set({'toggleMic': !result['toggleMic']});
-    });
-  });
+  chrome.storage.sync.set({ 'toggleMic': false });
+  document.querySelectorAll(elem['microphone'].selector)[elem['microphone'].index].addEventListener(
+    'mousedown',
+    function () {
+      chrome.storage.sync.get('toggleMic', function (result) {
+        chrome.storage.sync.set({ 'toggleMic': !result['toggleMic'] });
+      });
+    }
+  );
 
-  chrome.storage.sync.set({'toggleCam': false});
-  document.querySelector(elements[version]['camera'].selector).addEventListener('mousedown', function() {
+  chrome.storage.sync.set({ 'toggleCam': false });
+  document.querySelectorAll(elem['camera'].selector)[elem['camera'].index].addEventListener('mousedown', function () {
     chrome.storage.sync.get('toggleCam', function (result) {
-      chrome.storage.sync.set({'toggleCam': !result['toggleCam']});
+      chrome.storage.sync.set({ 'toggleCam': !result['toggleCam'] });
     });
   });
 } //syncButtonsBind
@@ -60,81 +69,48 @@ var setSelectorByHoVersion = function () {
   var isMeet = document.location.hostname === 'meet.google.com';
 
   if (isHoOriginal) {
-      version = 'HoOriginal';
+    version = 'HoOriginal';
   } else if (isHoBeta) {
-      version = 'HoBeta';
+    version = 'HoBeta';
   } else if (isMeet) {
-      version = 'Meet';
+    version = 'Meet';
   } else {
-      return false;
+    return false;
   }
 
   return true;
 } // setSelectorByHoVersion
 
-var elements =
-  {
-    HoOriginal: {
-      microphone:
-      {
-        'selector': '.IQ',
-        'flag': '.IQ[aria-pressed="true"]' //flag = 'a-b-B';
-      },
-      camera:
-      {
-        'selector': '.OQ',
-        'flag': '.OQ[aria-pressed="true"]'
-      }
-    },
-    HoBeta: {
-      microphone:
-      {
-        'selector': 'div[role="button"][jsname="gbbhzb"]',
-        'flag': '.IQ[aria-pressed="true"]' //flag = 'U8OAre';
-      },
-      camera:
-      {
-        'selector': 'div[role="button"][jsname="YczAdf"]',
-        'flag': '.YczAdf'
-      }
-    },
-    Meet: {
-      microphone: { 'selector': 'div[data-capture-type="mic"][data-is-muted] > div[role="button"][data-is-muted]' },
-      camera: { 'selector': 'div[data-capture-type="cam"][data-is-muted] > div[role="button"][data-is-muted]' }
+var hookHangouts = function (microphone, mic_index, camera, cam_index) {
+  chrome.storage.sync.get('muteMicrophone', function (result) {
+    if (result.muteMicrophone) {
+      simulateClick(microphone, mic_index);
     }
-  }
+  });
 
-
-var hookHangouts = function(microphone, camera) {
-   chrome.storage.sync.get('muteMicrophone', function (result) {
-       if (result.muteMicrophone) {
-           simulateClick(microphone);
-       }
-   });
-
-   chrome.storage.sync.get('muteCamera', function (result) {
-       if (result.muteCamera) {
-           simulateClick(camera);
-       }
-   });
+  chrome.storage.sync.get('muteCamera', function (result) {
+    if (result.muteCamera) {
+      simulateClick(camera, cam_index);
+    }
+  });
 }
 
-var toggleMic = function(selector) {
-    simulateClick(selector);
+var toggleMic = function (selector, mic_index) {
+  simulateClick(selector, mic_index);
 }
 
-var toggleCam = function(selector) {
-    simulateClick(selector);
+var toggleCam = function (selector, cam_index) {
+  simulateClick(selector, cam_index);
 }
 
-var simulateClick = function(el) {
-  var item = document.querySelector(el);
-  item.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true}));
-  item.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
-  item.dispatchEvent(new PointerEvent('pointerup', {bubbles: true}));
-  item.dispatchEvent(new MouseEvent('mouseup', {bubbles: true}));
-  item.dispatchEvent(new MouseEvent('mouseout', {bubbles: true}));
-  item.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+var simulateClick = function (el, index) {
+  var item = document.querySelectorAll(el)[index];
+  item.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+  item.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+  item.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+  item.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  item.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+  item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
   return true;
 }
