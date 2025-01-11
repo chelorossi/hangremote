@@ -1,45 +1,42 @@
 {
-  "manifest_version": 2,
-
+  "manifest_version": 3,
   "name": "Hangremote",
-  "description": "This extension provides remote control for Google Hangouts",
-  "version": "1.0.3",
+  "description": "This extension provides remote control for Google Meet",
+  "version": "1.0.4",
   "background": {
-    "scripts": ["src/js/commands.js"],
-    "persistent": false
+    "service_worker": "src/js/background.js",
+    "persistent": true
   },
-
   "content_scripts": [
     {
       "matches": [
-        "*://*.google.com/hangouts*",
-        "*://*.google.com/call*",
         "*://meet.google.com/*"
       ],
-      "js": ["src/js/content.js", "src/js/elements.js"]
+      "js": [
+        "src/js/content.js",
+        "src/js/elements.js"
+      ]
     }
   ],
-
   "commands": {
     "toggleMic": {
       "suggested_key": {
         "default": "Ctrl+Shift+7"
       },
       "global": true,
-      "description": "Toggle Microphone in Hangouts"
+      "description": "Toggle Microphone in Google Meet"
     },
     "toggleCam": {
       "suggested_key": {
         "default": "Ctrl+Shift+8"
       },
       "global": true,
-      "description": "Toggle Webcam in Hangouts"
+      "description": "Toggle Webcam in Google Meet"
     }
   },
-
-  "browser_action": {
+  "action": {
     "default_popup": "src/popup.html",
-    "default_title": "Manage microphone and camera settings on google hangouts",
+    "default_title": "Manage microphone and camera settings on Google Meet",
     "default_icon": {
       "19": "icons/PNG/hangouts2_19.png",
       "38": "icons/PNG/hangouts2_38.png"
@@ -50,5 +47,4 @@
     "tabs",
     "storage"
   ]
-
 }

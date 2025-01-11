@@ -1,58 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+  <head>
+    <title>Google Meet Remote</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="css/popup.css" />
+  </head>
 
-<head>
-  <title>Hangouts Remote</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="css/popup.css">
-</head>
-
-<body>
-  <header>HangRemote</header>
-  <div class="icons">
-    <div class="container">
-      <div id="div_mic">
-        <div class="anim_div"></div>
-        <content id="content_6">
-          <span id="span_mic"></span>
-        </content>
+  <body>
+    <header>MeetRemote</header>
+    <div class="icons">
+      <div class="container">
+        <div id="div_mic">
+          <div class="anim_div"></div>
+          <content id="content_6">
+            <span id="span_mic"></span>
+          </content>
+        </div>
+      </div>
+      <div class="container">
+        <div id="div_phone">
+          <div class="anim_div"></div>
+          <content id="content_6">
+            <span id="span_phone"></span>
+          </content>
+        </div>
+      </div>
+      <div class="container">
+        <div id="div_cam">
+          <div class="anim_div"></div>
+          <content id="content_6">
+            <span id="span_cam"></span>
+          </content>
+        </div>
       </div>
     </div>
-    <div class="container">
-      <div id="div_phone">
-        <div class="anim_div"></div>
-        <content id="content_6">
-          <span id="span_phone"></span>
-        </content>
+    <div>
+      <div class="checkboxes">
+        <div>
+          <label>
+            <input type="checkbox" id="muteMicrophone" name="muteMicrophone" />
+            No microphone at start
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" id="muteCamera" name="muteCamera" />
+            No camera at start
+          </label>
+        </div>
       </div>
     </div>
-    <div class="container">
-      <div id="div_cam">
-        <div class="anim_div"></div>
-        <content id="content_6">
-          <span id="span_cam"></span>
-        </content>
-      </div>
-    </div>
-  </div>
-  <div>
-    <div class="checkboxes">
-      <div>
-        <label>
-        <input type="checkbox" id="muteMicrophone" name="muteMicrophone"/>
-          No microphone at start
-        </label>
-      </div>
-      <div>
-        <label>
-        <input type="checkbox" id="muteCamera" name="muteCamera" />
-        No camera at start
-        </label>
-      </div>
-    </div>
-  </div>
-  <script src="js/extension.js"></script>
-
-</body>
+    <script src="js/extension.js"></script>
+  </body>
 </html>

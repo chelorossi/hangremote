@@ -2,46 +2,25 @@
 /// elements with index is for grabbin the i th element from querySelectorAll
 
 // eslint-disable-next-line no-unused-vars
-var elements =
-{
-  HoOriginal: {
-    microphone:
-    {
-      'selector': '.IQ',
-      'index': 0,
-      'flag': '.IQ[aria-pressed="true"]' //flag = 'a-b-B';
+var elements = {
+  splashScreen: {
+    microphone: {
+      selector: 'div[role="button"]',
+      index: 0,
     },
-    camera:
-    {
-      'selector': '.OQ',
-      'index': 0,
-      'flag': '.OQ[aria-pressed="true"]'
-    }
+    camera: {
+      selector: 'div[role="button"]',
+      index: 1,
+    },
   },
-  HoBeta: {
-    microphone:
-    {
-      'selector': 'div[role="button"][jsname="gbbhzb"]',
-      'index': 0,
-      'flag': '.IQ[aria-pressed="true"]' //flag = 'U8OAre';
+  videocall: {
+    microphone: {
+      selector: "span > button:first-child[data-is-muted]",
+      index: 0,
     },
-    camera:
-    {
-      'selector': 'div[role="button"][jsname="YczAdf"]',
-      'index': 0,
-      'flag': '.YczAdf'
-    }
+    camera: {
+      selector: "span > button:first-child[data-is-muted]",
+      index: 1,
+    },
   },
-  Meet: {
-    microphone:
-    {
-      'selector': 'div[role="button"][jsname="BOHaEe"]',
-      'index': 0
-    },
-    camera:
-    {
-      'selector': 'div[role="button"][jsname="BOHaEe"]',
-      'index': 1
-    }
-  }
-}
+};
