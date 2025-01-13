@@ -4,8 +4,7 @@
   "description": "This extension provides remote control for Google Meet",
   "version": "1.0.4",
   "background": {
-    "service_worker": "src/js/background.js",
-    "persistent": true
+    "service_worker": "src/js/background.js"
   },
   "content_scripts": [
     {

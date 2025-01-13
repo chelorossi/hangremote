@@ -1,13 +1,11 @@
-/*global require exports*/
-// using gulp 4
+import gulp from "gulp"; // eslint-disable-line
+import minifyCSS from "gulp-csso";
+import minifyJS from "gulp-uglify";
+import eslint from "gulp-eslint";
+import stripDebug from "gulp-strip-debug";
+import { deleteAsync } from "del";
 
-var gulp = require("gulp");
-var minifyCSS = require("gulp-csso");
-var minifyJS = require("gulp-uglify");
-var eslint = require("gulp-eslint");
-var del = require("del");
-
-var paths = {
+const paths = {
   styles: {
     src: "src/css/*.css",
     dest: "build/src/css",
@@ -18,45 +16,43 @@ var paths = {
   },
 };
 
-function copyAssets() {
+export function copyAssets() {
   return gulp
     .src(["./manifest.json", "./src/popup.html", "icons/**"], { base: "." })
     .pipe(gulp.dest("./build/"));
 }
 
-function styles() {
+export function styles() {
   return gulp
-    .src(paths.styles.src) // path to your file
+    .src(paths.styles.src)
     .pipe(minifyCSS())
     .pipe(gulp.dest(paths.styles.dest));
 }
 
-function clean() {
-  return del(["./build/"]);
+export async function clean() {
+  return deleteAsync(["./build/"]);
 }
 
-function lint() {
+export function lint() {
   return gulp
-    .src(paths.scripts.src) // path to your file
+    .src(paths.scripts.src)
     .pipe(eslint({ fix: true }))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 }
 
-function scripts() {
+export function scripts() {
   return gulp
-    .src(paths.scripts.src) // path to your file
+    .src(paths.scripts.src)
+    .pipe(stripDebug())
     .pipe(minifyJS())
     .pipe(gulp.dest(paths.scripts.dest));
 }
 
-exports.clean = clean;
-exports.styles = styles;
-exports.scripts = scripts;
-
-var build = gulp.series(
+const build = gulp.series(
   clean,
   lint,
   gulp.parallel(styles, scripts, copyAssets)
 );
-gulp.task("default", build);
+
+export default build;

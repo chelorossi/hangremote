@@ -11,18 +11,14 @@ chrome.commands.onCommand.addListener(function (command) {
   });
 });
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log("BACKGROUND Message received: ", JSON.stringify(message));
-  if (message.action === "updateCamState") {
-    console.log("Updating camera state to: ", message.state);
-    chrome.storage.sync.set({ toggleCam: message.state }, function () {
-      if (chrome.runtime.lastError) {
-        console.error("Error setting storage: ", chrome.runtime.lastError);
-        sendResponse({ success: false, error: chrome.runtime.lastError });
-      } else {
-        sendResponse({ success: true });
-      }
-    });
+chrome.runtime.onMessage.addListener(function (message) {
+  console.log("background.js Message received: ", JSON.stringify(message));
+
+  if (message.action === "updateState") {
+    /* eslint-disable-next-line */
+    var item = message.item;
+    /* eslint-disable-next-line */
+    chrome.storage.sync.set({ item: message.state });
   }
   return true; // Indicates that the response will be sent asynchronously
 });

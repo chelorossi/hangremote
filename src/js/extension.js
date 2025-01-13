@@ -22,52 +22,41 @@ function updateButton(button, $tagDiv, $tagSpan) {
   }
 }
 
-function sendToggle(button, $tagDiv, $tagSpan) {
+function sendToggle(button) {
   chrome.tabs.query({ url: tabUrls }, function (tabs) {
     if (tabs.length == 0) {
       chrome.tabs.create({ url: "https://meet.google.com" }, function () {
-        /* Do nothing on callback */
+        return;
       });
     } else if (button === "togglePhone") {
       chrome.tabs.remove(tabs[0].id, function () {
         return;
       });
     } else {
-      toggleButton(tabs[0].id, button, $tagDiv, $tagSpan);
+      //toggleButton(tabs[0].id, button, $tagDiv, $tagSpan);
+      console.log(
+        "sendToggle() - extension.js !!!",
+        button,
+        systemState[button]
+      );
+
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { action: button },
+        function (response) {
+          if (response && response.success) {
+            // console.log("Camera toggled state:, ", response.state);
+            // chrome.storage.sync.set({ button: response.state });
+            // systemState[button] = response.state;
+            // updateButton(button, $tagDiv, $tagSpan);
+          } else {
+            console.log("Failed to toggle: ", JSON.stringify(response));
+          }
+        }
+      );
     }
   });
 }
-
-function toggleButton(tab, button) {
-  console.log("sendToggle() - extension.js !!!", button, systemState[button]);
-
-  chrome.tabs.sendMessage(tab, { action: button }, function (response) {
-    if (response && response.success) {
-      console.log("Camera toggled state:, ", response.state);
-
-      // chrome.storage.sync.set({ button: response.state });
-      // systemState[button] = response.state;
-      // updateButton(button, $tagDiv, $tagSpan);
-    } else {
-      console.log("Failed to toggle: ", JSON.stringify(response));
-    }
-  });
-}
-
-// Add a listener to handle messages from content.js
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log("Message received: ", JSON.stringify(message));
-  if (message.action === "updateCamState") {
-    systemState["toggleCam"] = message.state;
-
-    chrome.storage.sync.set({ toggleCam: message.state });
-
-    // updateButton(button, $tagDiv, $tagSpan);
-    console.log("updateCamState() - extension.js !!!", message.state);
-    updateButton("toggleCam", "div_cam", "span_cam");
-  }
-  sendResponse({ success: true });
-});
 
 /**
  * loadSettings() grabs state for buttons/actions //FIX: based in actual buttons state
@@ -103,6 +92,7 @@ function initExtension(clicks) {
     });
   }
 
+  // FIX ME: saveSettings() is being called twice
   document.getElementById("muteCamera").addEventListener("click", saveSettings);
   document
     .getElementById("muteMicrophone")
@@ -121,13 +111,27 @@ var f_install_clicks = function (button, $tagDiv, $tagSpan) {
     // optimistically update the button state
     systemState[button] = !systemState[button]; //TODO: Check me out!
     updateButton(button, $tagDiv, $tagSpan);
-
-    chrome.storage.sync.get("toggleCam", function (result) {
-      console.log("toggleCam!!", result.toggleCam);
-    });
     sendToggle(button, $tagDiv, $tagSpan);
   });
 };
+
+// Add a listener to handle messages from content.js
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  console.log("!!!!Message received: ", JSON.stringify(message));
+  if (message.action === "updateState") {
+    var item = message.item;
+    systemState[item] = message.state;
+    /* eslint-disable-next-line */
+    chrome.storage.sync.set({ item: message.state });
+    console.log("updateState() - extension.js !!!", message.state);
+    if (item === "toggleCam") {
+      updateButton("toggleCam", "div_cam", "span_cam");
+    } else if (item === "toggleMic") {
+      updateButton("toggleMic", "div_mic", "span_mic");
+    }
+  }
+  sendResponse({ success: true });
+});
 
 /***** MAIN EVENT FOR INIT (LOAD EXTENSION) ***************/
 window.addEventListener("load", init);

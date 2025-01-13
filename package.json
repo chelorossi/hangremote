@@ -1,14 +1,16 @@
 {
   "name": "hangremote",
-  "version": "1.0.0",
+  "version": "1.0.4",
+  "type": "module",
   "description": "Hangremote",
   "main": "js/popup.html",
-  "dependencies": {},
   "devDependencies": {
-    "eslint": "^4.19.1",
+    "del": "^8.0.0",
+    "eslint": "^7.32.0",
     "gulp": "^4.0.0",
     "gulp-csso": "^3.0.1",
     "gulp-eslint": "^4.0.2",
+    "gulp-strip-debug": "^6.0.0",
     "gulp-uglify": "^3.0.0"
   },
   "scripts": {
