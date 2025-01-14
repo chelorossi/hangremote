@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Hangremote",
+  "name": "MeetRemote",
   "description": "This extension provides remote control for Google Meet",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "background": {
     "service_worker": "src/js/background.js"
   },
@@ -20,17 +20,27 @@
   "commands": {
     "toggleMic": {
       "suggested_key": {
-        "default": "Ctrl+Shift+7"
+        "default": "Alt+Shift+A",
+        "mac": "Alt+Shift+A"
       },
       "global": true,
-      "description": "Toggle Microphone in Google Meet"
+      "description": "Toggle Microphone"
     },
     "toggleCam": {
       "suggested_key": {
-        "default": "Ctrl+Shift+8"
+        "default": "Alt+Shift+V",
+        "mac": "Alt+Shift+V"
       },
       "global": true,
-      "description": "Toggle Webcam in Google Meet"
+      "description": "Toggle Camera"
+    },
+    "leaveMeeting": {
+      "suggested_key": {
+        "default": "Alt+Shift+Q",
+        "mac": "Alt+Shift+Q"
+      },
+      "global": true,
+      "description": "Leave Meeting"
     }
   },
   "action": {
@@ -42,8 +52,8 @@
     }
   },
   "permissions": [
-    "activeTab",
     "tabs",
-    "storage"
+    "storage",
+    "commands"
   ]
 }

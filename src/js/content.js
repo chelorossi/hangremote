@@ -1,4 +1,4 @@
-/*global document chrome*/
+/*global chrome*/
 var meetLocation = "unknown";
 var currentURL = location.href;
 
@@ -7,11 +7,8 @@ var observeDOM = function () {
   var observer = new MutationObserver(function () {
     if (currentURL !== location.href) {
       currentURL = location.href;
-      console.log("URL changed to: ", currentURL);
-      // handlePageChange();
     }
     if (detectScreen()) {
-      console.log("content.js - [meetLocation]:", meetLocation);
       observerInit.observe(document.body, { childList: true });
     }
   });
@@ -31,7 +28,6 @@ var observerInit = new MutationObserver(function () {
 
   // Keeps DOM Buttons state in sync with the extension state
   if (microphone && camera) {
-    console.log("observerInit() content.js - OBSERVER INIT !!!");
     chrome.storage.sync.get(
       ["muteMicrophone", "muteCamera"],
       function (result) {
@@ -45,16 +41,10 @@ var observerInit = new MutationObserver(function () {
           var isCamMuted = camera.getAttribute("data-is-muted") === "true";
           muteOnInit(camera, isCamMuted, result.muteCamera);
 
-          chrome.storage.sync.set(
-            {
-              toggleMic: result.muteMicrophone || isMicMuted,
-              toggleCam: result.muteCamera || isCamMuted,
-            },
-            function () {
-              console.log("toggleMic", result.muteCamera);
-              console.log("toggleCam", result.muteCamera);
-            }
-          );
+          chrome.storage.sync.set({
+            toggleMic: result.muteMicrophone || isMicMuted,
+            toggleCam: result.muteCamera || isCamMuted,
+          });
           attachListener(microphone, "toggleMic");
           attachListener(camera, "toggleCam");
           observerInit.disconnect();
@@ -77,10 +67,6 @@ function attachListener(button, item) {
       if (mutation.attributeName === "data-is-muted") {
         chrome.storage.sync.get(item, function () {
           var isMuted = button.getAttribute("data-is-muted") === "true";
-          console.log(
-            "LISTENER CLICK IN item: " + item + " data-is-muted:" + isMuted
-          );
-
           try {
             if (item === "toggleCam" || item === "toggleMic") {
               chrome.runtime.sendMessage(
@@ -91,7 +77,8 @@ function attachListener(button, item) {
                 },
                 function () {
                   if (chrome.runtime.lastError) {
-                    console.log(
+                    // eslint-disable-next-line no-console
+                    console.error(
                       "Extension not available:",
                       chrome.runtime.lastError.message
                     );
@@ -99,11 +86,10 @@ function attachListener(button, item) {
                 }
               );
             } else {
-              console.log("Setting item: " + item + " to " + isMuted);
               chrome.storage.sync.set({ item: isMuted });
             }
           } catch (error) {
-            console.log("Failed to send message:", error);
+            //console.log("Failed to send message:", error);
           }
         });
       }
@@ -126,7 +112,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     sendResponse({ success: result.success, state: result.state });
   } else {
-    console.log("Unknown action: ", request.action);
     sendResponse({ success: false });
   }
   return true;
@@ -134,19 +119,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 var toggleElement = function (meetLocation, type, key) {
   var elem = elements[meetLocation]; // eslint-disable-line no-undef
-  console.log("meetLocation", meetLocation);
 
   var selector = elem[type].selector;
   var index = elem[type].index;
-  console.log("selector!!!", selector);
-  console.log("index!!!", index);
 
   var item = document.querySelectorAll(selector)[index];
   var isMuted = false;
   chrome.storage.sync.get([key], function (result) {
     isMuted = result[key];
   });
-  console.log("isMuted!!!", isMuted);
+
   try {
     item.click();
     chrome.storage.sync.get([key], function (result) {
@@ -156,16 +138,11 @@ var toggleElement = function (meetLocation, type, key) {
         item: key,
         state: !isMuted,
       });
-      console.log("isMuted!!!", isMuted);
     });
   } catch (error) {
-    console.log("toggle" + "() content.js - error: ", error);
     return { state: error, success: false };
   }
-  console.log(
-    "toggle item!!!" + key + "() content.js - click() !!! is-muted???: ",
-    isMuted
-  );
+
   return {
     success: true,
     state: isMuted,
@@ -186,11 +163,3 @@ var detectScreen = function () {
   meetLocation = isSplashScreen ? "splashScreen" : "videocall";
   return previousScreen !== meetLocation;
 };
-
-window.addEventListener(
-  "DOMContentLoaded",
-  function load() {
-    console.log("init() content.js - INIT !!! ---  DOMContentLoaded");
-  },
-  false
-);

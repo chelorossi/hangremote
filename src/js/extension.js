@@ -1,4 +1,4 @@
-/*global document chrome console*/
+/*global chrome */
 
 var systemState = { toggleMic: false, toggleCam: false }; //buttons state
 var tabUrls = null;
@@ -33,26 +33,19 @@ function sendToggle(button) {
         return;
       });
     } else {
-      //toggleButton(tabs[0].id, button, $tagDiv, $tagSpan);
-      console.log(
-        "sendToggle() - extension.js !!!",
-        button,
-        systemState[button]
-      );
-
       chrome.tabs.sendMessage(
         tabs[0].id,
-        { action: button },
-        function (response) {
-          if (response && response.success) {
-            // console.log("Camera toggled state:, ", response.state);
-            // chrome.storage.sync.set({ button: response.state });
-            // systemState[button] = response.state;
-            // updateButton(button, $tagDiv, $tagSpan);
-          } else {
-            console.log("Failed to toggle: ", JSON.stringify(response));
-          }
-        }
+        { action: button }
+        // function (response) {
+        //   if (response && response.success) {
+        //     // console.log("Camera toggled state:, ", response.state);
+        //     // chrome.storage.sync.set({ button: response.state });
+        //     // systemState[button] = response.state;
+        //     // updateButton(button, $tagDiv, $tagSpan);
+        //   } else {
+        //     console.log("Failed to toggle: ", JSON.stringify(response));
+        //   }
+        // }
       );
     }
   });
@@ -101,15 +94,10 @@ function initExtension(clicks) {
 
 var f_install_clicks = function (button, $tagDiv, $tagSpan) {
   updateButton(button, $tagDiv, $tagSpan);
-  console.log(
-    "f_install_clicks() - INIT !!! button $1 : $2",
-    button,
-    systemState[button]
-  );
 
   document.getElementById($tagDiv).addEventListener("click", function () {
     // optimistically update the button state
-    systemState[button] = !systemState[button]; //TODO: Check me out!
+    systemState[button] = !systemState[button]; //toggle
     updateButton(button, $tagDiv, $tagSpan);
     sendToggle(button, $tagDiv, $tagSpan);
   });
@@ -117,13 +105,12 @@ var f_install_clicks = function (button, $tagDiv, $tagSpan) {
 
 // Add a listener to handle messages from content.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log("!!!!Message received: ", JSON.stringify(message));
   if (message.action === "updateState") {
     var item = message.item;
     systemState[item] = message.state;
     /* eslint-disable-next-line */
     chrome.storage.sync.set({ item: message.state });
-    console.log("updateState() - extension.js !!!", message.state);
+
     if (item === "toggleCam") {
       updateButton("toggleCam", "div_cam", "span_cam");
     } else if (item === "toggleMic") {

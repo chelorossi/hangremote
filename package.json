@@ -1,8 +1,8 @@
 {
-  "name": "hangremote",
-  "version": "1.0.4",
+  "name": "meetremote",
+  "version": "1.1.0",
   "type": "module",
-  "description": "Hangremote",
+  "description": "MeetRemote",
   "main": "js/popup.html",
   "devDependencies": {
     "del": "^8.0.0",
@@ -11,16 +11,19 @@
     "gulp-csso": "^3.0.1",
     "gulp-eslint": "^4.0.2",
     "gulp-strip-debug": "^6.0.0",
-    "gulp-uglify": "^3.0.0"
+    "gulp-uglify": "^3.0.0",
+    "zip-cli": "^0.0.0"
   },
   "scripts": {
+    "build": "gulp",
+    "postbuild": "zip -r build.zip build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/cheluskis/hangremote.git"
+    "url": "git+ssh://git@github.com:chelorossi/hangremote.git"
   },
   "author": "Marcelo Rossi /github.com/cheluskis",
   "license": "AGPL-3.0",
-  "homepage": "https://bitbucket.org/cheluskis/hangremote#readme"
+  "homepage": "https://github.com/chelorossi/hangremote#readme"
 }
