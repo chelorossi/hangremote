@@ -33,20 +33,13 @@ function sendToggle(button) {
         return;
       });
     } else {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { action: button }
-        // function (response) {
-        //   if (response && response.success) {
-        //     // console.log("Camera toggled state:, ", response.state);
-        //     // chrome.storage.sync.set({ button: response.state });
-        //     // systemState[button] = response.state;
-        //     // updateButton(button, $tagDiv, $tagSpan);
-        //   } else {
-        //     console.log("Failed to toggle: ", JSON.stringify(response));
-        //   }
-        // }
-      );
+      chrome.tabs.sendMessage(tabs[0].id, { action: button }, function () {
+        if (chrome.runtime.lastError) {
+          systemState[button] = !systemState[button]; // restore previous state
+          // eslint-disable-next-line no-console
+          console.error("Error sending message:", chrome.runtime.lastError);
+        }
+      });
     }
   });
 }

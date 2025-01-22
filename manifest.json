@@ -23,7 +23,6 @@
         "default": "Alt+Shift+A",
         "mac": "Alt+Shift+A"
       },
-      "global": true,
       "description": "Toggle Microphone"
     },
     "toggleCam": {
@@ -31,7 +30,6 @@
         "default": "Alt+Shift+V",
         "mac": "Alt+Shift+V"
       },
-      "global": true,
       "description": "Toggle Camera"
     },
     "leaveMeeting": {
@@ -39,16 +37,20 @@
         "default": "Alt+Shift+Q",
         "mac": "Alt+Shift+Q"
       },
-      "global": true,
       "description": "Leave Meeting"
     }
+  },
+  "icons": {
+    "19": "icons/PNG/hangouts2_19.png",
+    "38": "icons/PNG/hangouts2_38.png",
+    "48": "icons/PNG/hanremoteIcon48.png",
+    "128": "icons/PNG/hanremoteIcon128.png"
   },
   "action": {
     "default_popup": "src/popup.html",
     "default_title": "Manage microphone and camera settings on Google Meet",
     "default_icon": {
-      "19": "icons/PNG/hangouts2_19.png",
-      "38": "icons/PNG/hangouts2_38.png"
+      "128": "icons/PNG/hanremoteIcon128.png"
     }
   },
   "permissions": [

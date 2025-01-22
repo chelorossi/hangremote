@@ -1,206 +1,200 @@
-  header {
-      color: #FFF;
-      font-weight: bold;
-      background: #465963d6;
-      padding: 0.7em 0.9em;
-      margin-bottom: 0.5em;
-  }
-  /* fallback */
-  @font-face {
-    font-family: 'Material Icons Extended';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Material Icons Extended'), local('MaterialIconsExtended-Regular'), url(https://fonts.gstatic.com/s/materialiconsextended/v19/iPCrlNN5TpNi9yeZKkKxXzQoFWDY1ZXsjnEgMOt_jL4.woff2) format('woff2');
-  }
+header {
+  color: #fff;
+  font-weight: bold;
+  background: #465963d6;
+  padding: 0.7em 0.9em;
+  margin-bottom: 0.5em;
+}
+/* fallback */
+@font-face {
+  font-family: "Material Icons Extended";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Material Icons Extended"), local("MaterialIconsExtended-Regular"),
+    url(https://fonts.gstatic.com/s/materialiconsextended/v19/iPCrlNN5TpNi9yeZKkKxXzQoFWDY1ZXsjnEgMOt_jL4.woff2)
+      format("woff2");
+}
 
-  body {
-    width: 245px;
-    background-color: #ffffff;
-    margin: auto;
-  }
-  input[type=checkbox], input[type=radio] {
-    vertical-align: middle;
-    position: relative;
-    bottom: 1px;
-  }
-  input[type=radio] {
-    bottom: 2px;
-  }
+body {
+  width: 245px;
+  background-color: #ffffff;
+  margin: auto;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+}
+input[type="radio"] {
+  bottom: 2px;
+}
 
-  .icons {
-    margin-top: 13px;
-    margin-left: 30px;
-  }
+.icons {
+  margin-top: 13px;
+  margin-left: 30px;
+}
 
-  .container {
-    margin: auto 2px;
-    width: 56px;
-    display: inline;
-  }
+.container {
+  margin: auto 2px;
+  width: 56px;
+  display: inline;
+}
 
-  .checkboxes {
-    margin-top: 10px;
-    margin-left: 30px;
-    margin-bottom: 7px;
-    color: #2f2f2f;
-  }
+.checkboxes {
+  margin-top: 10px;
+  margin-left: 30px;
+  margin-bottom: 7px;
+  color: #2f2f2f;
+}
 
-  .icon_div_off {
-    background-color: rgba(69, 90, 100, 0)
+.icon_div_off {
+  background-color: rgba(69, 90, 100, 0);
+}
 
-  }
+.icon_div_on {
+  background-color: rgb(255, 82, 82);
+}
 
-  .icon_div_on {
-    background-color: rgb(255, 82, 82)
+.icon_span_off {
+  color: rgba(69, 90, 100, 1);
+}
 
-  }
+.icon_span_on {
+  color: white;
+}
 
-  .icon_span_off {
-    color: rgba(69, 90, 100, 1);
-  }
+#div_mic,
+#div_phone,
+#div_cam {
+  background: #fafafa;
+  font-family: "Material Icons Extended";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  /*background: rgba(84,110,122,0);          */
+  bottom: 0px;
+  box-sizing: border-box;
+  color: rgb(69, 90, 100);
+  cursor: pointer;
+  display: inline-block;
+  height: 56px;
+  left: 0px;
+  position: relative;
+  right: 0px;
+  text-align: center;
+  top: 0px;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 56px;
+  /*margin: 16px 8px;*/
+  vertical-align: middle;
+  column-rule-color: rgb(69, 90, 100);
+  perspective-origin: 28px 28px;
+  transform-origin: 28px 28px;
+  user-select: none;
+  fill: rgb(255, 255, 255);
+  border: 1px solid rgba(38, 50, 56, 0.14902);
+  border-radius: 50% 50% 50% 50%;
+  font: normal normal normal normal 12px / normal Roboto, arial, sans-serif;
+  outline: rgb(69, 90, 100) none 0px;
+  overflow: hidden;
+  transition: all 0.25s linear 0s;
+} /*#div_mic, #div_phone, #div_cam*/
 
-  .icon_span_on {
-    color: white;
-  }
+#content_6 {
+  bottom: 14px;
+  color: rgb(69, 90, 100);
+  cursor: pointer;
+  float: left;
+  height: 24px;
+  margin-left: 16px;
 
-  .icon_place {
-    background-color: #fafafa;
-    padding: 0;
-    vertical-align: middle;
-  }
-  .icon_place:hover {
-    /*background: #546e7a;
+  text-align: center;
+  margin-top: 16px;
+  white-space: nowrap;
+  width: 24px;
+  perspective-origin: 12px 12px;
+  user-select: none;
+  fill: rgb(255, 255, 255);
+  border: 0px none rgb(69, 90, 100);
+  font: normal normal normal normal 12px / normal Roboto, arial, sans-serif;
+  transition: all 0.3s ease-in-out 0s;
+} /*#content_6*/
 
-    -webkit-transform: scale(1.05);
-    transform: scale(1.05)*/
-  }
+#span_cam,
+#span_mic {
+  color: rgb(69, 90, 100);
+  cursor: pointer;
+  display: inline-block;
+  height: 24px;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+  white-space: nowrap;
+  width: 24px;
+  column-rule-color: rgb(69, 90, 100);
+  perspective-origin: 12px 12px;
+  transform-origin: 12px 12px;
+  user-select: none;
+  fill: rgb(255, 255, 255);
+  border: 0px none rgb(69, 90, 100);
+  font: normal normal normal normal 24px / 24px "Material Icons Extended";
+  outline: rgb(69, 90, 100) none 0px;
+  transition: color 0.25s linear 0s;
+} /*#SPAN_7*/
 
+#span_phone {
+  color: rgb(255, 82, 82);
+  cursor: pointer;
+  display: inline-block;
+  height: 24px;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+  white-space: nowrap;
+  width: 24px;
+  column-rule-color: rgb(69, 90, 100);
+  perspective-origin: 12px 12px;
+  transform-origin: 12px 12px;
+  user-select: none;
+  fill: rgb(255, 255, 255);
+  border: 0px none rgb(69, 90, 100);
+  font: normal normal normal normal 24px / 24px "Material Icons Extended";
+  outline: rgb(69, 90, 100) none 0px;
+  /*transition: color 0.25s linear 0s;*/
+}
 
-  #div_mic, #div_phone, #div_cam {
-    background: #fafafa;
-    font-family: 'Material Icons Extended';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 24px;
-    line-height: 1;
-    letter-spacing: normal;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-      /*background: rgba(84,110,122,0);          */
-      bottom: 0px;
-      box-sizing: border-box;
-      color: rgb(69, 90, 100);
-      cursor: pointer;
-      display: inline-block;
-      height: 56px;
-      left: 0px;
-      position: relative;
-      right: 0px;
-      text-align: center;
-      top: 0px;
-      vertical-align: middle;
-      white-space: nowrap;
-      width: 56px;
-      /*margin: 16px 8px;*/
-      vertical-align: middle;
-      column-rule-color: rgb(69, 90, 100);
-      perspective-origin: 28px 28px;
-      transform-origin: 28px 28px;
-      user-select: none;
-      fill: rgb(255, 255, 255);
-      border: 1px solid rgba(38, 50, 56, 0.14902);
-      border-radius: 50% 50% 50% 50%;
-      font: normal normal normal normal 12px / normal Roboto, arial, sans-serif;
-      outline: rgb(69, 90, 100) none 0px;
-      overflow: hidden;
-      transition: all 0.25s linear 0s;
-  }/*#div_mic, #div_phone, #div_cam*/
+.anim_div {
+  left: 0;
+  background-color: rgb(0, 0, 0);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  top: 0;
+  /*transition: background .5s linear;*/
+}
 
-  #content_6 {
-      bottom: 14px;
-      color: rgb(69, 90, 100);
-      cursor: pointer;
-      float:left;
-      height: 24px;
-      margin-left: 16px;
+.anim_div:hover {
+  opacity: 0.122;
+}
 
-      text-align: center;
-      margin-top: 16px;
-      white-space: nowrap;
-      width: 24px;
-      perspective-origin: 12px 12px;
-      user-select: none;
-      fill: rgb(255, 255, 255);
-      border: 0px none rgb(69, 90, 100);
-      font: normal normal normal normal 12px / normal Roboto, arial, sans-serif;
-      transition: all 0.3s ease-in-out 0s;
-  }/*#content_6*/
+.anim_div:active {
+  opacity: 0.322;
+}
 
-  #span_cam, #span_mic {
-      color: rgb(69, 90, 100);
-      cursor: pointer;
-      display: inline-block;
-      height: 24px;
-      text-align: center;
-      text-rendering: optimizeLegibility;
-      white-space: nowrap;
-      width: 24px;
-      column-rule-color: rgb(69, 90, 100);
-      perspective-origin: 12px 12px;
-      transform-origin: 12px 12px;
-      user-select: none;
-      fill: rgb(255, 255, 255);
-      border: 0px none rgb(69, 90, 100);
-      font: normal normal normal normal 24px / 24px "Material Icons Extended";
-      outline: rgb(69, 90, 100) none 0px;
-      transition: color 0.25s linear 0s;
-  }/*#SPAN_7*/
-
-  #span_phone{
-      color: rgb(255, 82, 82);
-      cursor: pointer;
-      display: inline-block;
-      height: 24px;
-      text-align: center;
-      text-rendering: optimizeLegibility;
-      white-space: nowrap;
-      width: 24px;
-      column-rule-color: rgb(69, 90, 100);
-      perspective-origin: 12px 12px;
-      transform-origin: 12px 12px;
-      user-select: none;
-      fill: rgb(255, 255, 255);
-      border: 0px none rgb(69, 90, 100);
-      font: normal normal normal normal 24px / 24px "Material Icons Extended";
-      outline: rgb(69, 90, 100) none 0px;
-      /*transition: color 0.25s linear 0s;*/
-  }
-
-  .anim_div {
-    left: 0;
-    background-color: rgb(0,0,0);
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    opacity: 0.0;
-    top: 0;
-    /*transition: background .5s linear;*/
-  }
-
-  .anim_div:hover {
-    opacity: 0.122;
-  }
-
-  .anim_div:active {
-    opacity: 0.322;
-  }
-
-  #div_mic:hover, #div_phone:hover, #div_cam:hover {
-    box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14),0 3px 14px 2px rgba(0,0,0,0.12),0 5px 5px -3px rgba(0,0,0,0.2);
-
-  }
+#div_mic:hover,
+#div_phone:hover,
+#div_cam:hover {
+  box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2);
+}

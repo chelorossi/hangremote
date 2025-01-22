@@ -35,6 +35,9 @@ var observerInit = new MutationObserver(function () {
           microphone.hasAttribute("data-is-muted") &&
           camera.hasAttribute("data-is-muted")
         ) {
+          attachListener(microphone, "toggleMic");
+          attachListener(camera, "toggleCam");
+
           var isMicMuted = microphone.getAttribute("data-is-muted") === "true";
           muteOnInit(microphone, isMicMuted, result.muteMicrophone);
 
@@ -45,8 +48,7 @@ var observerInit = new MutationObserver(function () {
             toggleMic: result.muteMicrophone || isMicMuted,
             toggleCam: result.muteCamera || isCamMuted,
           });
-          attachListener(microphone, "toggleMic");
-          attachListener(camera, "toggleCam");
+
           observerInit.disconnect();
         }
       }
@@ -89,7 +91,8 @@ function attachListener(button, item) {
               chrome.storage.sync.set({ item: isMuted });
             }
           } catch (error) {
-            //console.log("Failed to send message:", error);
+            // eslint-disable-next-line no-console
+            console.error("Fails send updating state", error);
           }
         });
       }
@@ -114,7 +117,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   } else {
     sendResponse({ success: false });
   }
-  return true;
 });
 
 var toggleElement = function (meetLocation, type, key) {
@@ -158,7 +160,10 @@ var toggleCam = function (meetLocation) {
 };
 
 var detectScreen = function () {
-  var isSplashScreen = document.querySelectorAll("div > button").length > 0;
+  var isSplashScreen =
+    document.querySelector("[data-present-landing]") !== null ||
+    document.querySelector("[data-panel-id]") === null;
+
   var previousScreen = meetLocation;
   meetLocation = isSplashScreen ? "splashScreen" : "videocall";
   return previousScreen !== meetLocation;
