@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MeetRemote test fixture — videocall</title>
+  </head>
+  <body>
+    <!--
+      Minimal stand-in for Meet's in-call screen, built from the real
+      attributes elements.js/content.js key off of (captured in
+      src/js/videocall_snapshot_2025_01_17.html) rather than the full 1.8MB
+      page dump. See elements.js: elements.videocall.{microphone,camera} =
+      "span > button:first-child[data-is-muted]" at index 0 / 1;
+      content.js#detectScreen requires a data-panel-id element present and
+      no data-present-landing element (isSplashScreen is true if EITHER
+      data-present-landing exists OR data-panel-id is absent).
+    -->
+    <button role="button" data-panel-id="5" aria-label="Meeting details">details</button>
+
+    <span data-is-tooltip-wrapper="true">
+      <button id="mic-button" role="button" aria-label="Turn off microphone" data-is-muted="false">mic</button>
+    </span>
+    <span data-is-tooltip-wrapper="true">
+      <button id="cam-button" role="button" aria-label="Turn off camera" data-is-muted="false">cam</button>
+    </span>
+
+    <div id="ready" data-ready="false"></div>
+    <div id="ready2" data-ready="false"></div>
+
+    <script>
+      // See splashscreen.html for why this exists: mimics Meet's own click
+      // behavior, and kicks content.js's MutationObserver-based screen
+      // detection which only reacts to mutations after it attaches.
+      for (const id of ["mic-button", "cam-button"]) {
+        document.getElementById(id).addEventListener("click", (event) => {
+          const el = event.currentTarget;
+          const muted = el.getAttribute("data-is-muted") === "true";
+          el.setAttribute("data-is-muted", String(!muted));
+        });
+      }
+
+      // content.js's outer observer only reacts to childList mutations
+      // (node add/remove), not attribute changes — this appendChild is what
+      // kicks detectScreen() into setting meetLocation (see splashscreen.html).
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+        document.getElementById("ready").setAttribute("data-ready", "true");
+      }, 50);
+
+      // content.js's *second* observer (observerInit, which attaches the
+      // per-button data-is-muted listeners that let Meet-initiated changes
+      // reach the popup) only starts watching body as a reaction to the
+      // first mutation above, so it needs a *second* childList mutation
+      // after that to ever fire and actually attach those listeners.
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+        document.getElementById("ready2").setAttribute("data-ready", "true");
+      }, 150);
+    </script>
+  </body>
+</html>

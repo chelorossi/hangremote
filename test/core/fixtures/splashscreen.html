@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MeetRemote test fixture — splash screen</title>
+  </head>
+  <body>
+    <!--
+      Minimal stand-in for Meet's pre-join ("splash") screen, built from the
+      real attributes elements.js/content.js key off of (captured in
+      src/js/splahscreen_snapshot_2025_01_17.html), not the full page dump —
+      that dump ships live <script src="https://apis.google.com/..."> tags
+      and a <base href="https://meet.google.com/">, which would make tests
+      hit the network. See elements.js: elements.splashScreen.{microphone,camera}
+      = div[role="button"] at index 0 / 1, keyed off data-is-muted;
+      content.js#detectScreen keys off data-present-landing.
+    -->
+    <a data-present-landing="false" href="#">landing link</a>
+
+    <div role="button" aria-label="Turn on microphone" data-is-muted="true" id="mic-button">mic</div>
+    <div role="button" aria-label="Turn on camera" data-is-muted="true" id="cam-button">cam</div>
+
+    <div id="ready" data-ready="false"></div>
+    <div id="ready2" data-ready="false"></div>
+
+    <script>
+      // Mimics Meet's own app JS: clicking a mute button flips its own
+      // data-is-muted attribute. content.js's MutationObserver-based
+      // detection (attachListener) relies on this actually happening; the
+      // extension's own toggleElement() call does not (it flips state from
+      // storage instead) but we make the fixture behave like the real thing
+      // for a stronger, more faithful assertion.
+      for (const id of ["mic-button", "cam-button"]) {
+        document.getElementById(id).addEventListener("click", (event) => {
+          const el = event.currentTarget;
+          const muted = el.getAttribute("data-is-muted") === "true";
+          el.setAttribute("data-is-muted", String(!muted));
+        });
+      }
+
+      // content.js only reacts to DOM mutations that happen *after* it
+      // attaches its MutationObserver, and only to childList mutations
+      // (node add/remove) — not attribute changes (see content.js
+      // observeDOM(): `observer.observe(document.body, { childList: true,
+      // subtree: true })`). Real Meet's SPA does this constantly by
+      // re-rendering; a static fixture has to fake one such mutation or
+      // content.js's meetLocation never leaves "unknown".
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+        document.getElementById("ready").setAttribute("data-ready", "true");
+      }, 50);
+
+      // content.js's second observer (observerInit, which attaches the
+      // per-button data-is-muted listeners so Meet-initiated changes reach
+      // the popup) only starts watching body as a reaction to the mutation
+      // above, so it needs a second childList mutation after that to ever
+      // fire and actually attach those listeners.
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+        document.getElementById("ready2").setAttribute("data-ready", "true");
+      }, 150);
+    </script>
+  </body>
+</html>
