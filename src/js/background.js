@@ -4,10 +4,14 @@ chrome.commands.onCommand.addListener(function (command) {
   var urls = ["https://meet.google.com/*"];
 
   chrome.tabs.query({ url: urls }, function (tabs) {
+    if (tabs.length == 0) {
+      return;
+    }
     if (command === "leaveMeeting") {
       chrome.tabs.remove(tabs[0].id, function () {
         return;
       });
+      return;
     }
     for (var i = 0; i < tabs.length; i++) {
       var tab = tabs[i];

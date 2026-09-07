@@ -88,7 +88,9 @@ function attachListener(button, item) {
                 }
               );
             } else {
-              chrome.storage.sync.set({ item: isMuted });
+              var state = {};
+              state[item] = isMuted;
+              chrome.storage.sync.set(state);
             }
           } catch (error) {
             // eslint-disable-next-line no-console

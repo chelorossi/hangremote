@@ -22,7 +22,7 @@ function updateButton(button, $tagDiv, $tagSpan) {
   }
 }
 
-function sendToggle(button) {
+function sendToggle(button, $tagDiv, $tagSpan) {
   chrome.tabs.query({ url: tabUrls }, function (tabs) {
     if (tabs.length == 0) {
       chrome.tabs.create({ url: "https://meet.google.com" }, function () {
@@ -36,6 +36,9 @@ function sendToggle(button) {
       chrome.tabs.sendMessage(tabs[0].id, { action: button }, function () {
         if (chrome.runtime.lastError) {
           systemState[button] = !systemState[button]; // restore previous state
+          if ($tagDiv && $tagSpan) {
+            updateButton(button, $tagDiv, $tagSpan); // repaint the reverted state
+          }
           // eslint-disable-next-line no-console
           console.error("Error sending message:", chrome.runtime.lastError);
         }
@@ -101,9 +104,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "updateState") {
     var item = message.item;
     systemState[item] = message.state;
-    var updatedState = {};
-    updatedState[item] = message.state;
-    chrome.storage.sync.set(updatedState);
+    // background.js persists this to chrome.storage.sync for every updateState
 
     if (item === "toggleCam") {
       updateButton("toggleCam", "div_cam", "span_cam");
