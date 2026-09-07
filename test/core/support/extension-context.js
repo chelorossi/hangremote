@@ -40,7 +40,7 @@ export const test = base.extend({
     }
     if (!worker) {
       throw new Error(
-        "The extension never registered a service worker — check that ./test/core/.tmp/test-build/manifest.json is valid and loadable."
+        `The extension never registered a service worker — check that ${path.join(TEST_BUILD_DIR, "manifest.json")} is valid and loadable.`
       );
     }
     await use(worker.url().split("/")[2]);

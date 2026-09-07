@@ -7,5 +7,3 @@ build*.zip
 # Recording test harness (generated fixtures, downloads, traces)
 test/rec/.tmp/
 
-# Core-functionality test harness (patched extension build, test results)
-test/core/.tmp/

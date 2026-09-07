@@ -12,7 +12,15 @@ const CORE_TEST_DIR = path.resolve(__dirname, "..");
 // write and Chrome effectively hangs. Ephemeral run state lives outside the
 // repo entirely; only static, low-churn things (the patched extension
 // build, fixtures) stay under the repo.
-const RUNTIME_DIR = path.join(os.tmpdir(), "meetremote-test-core");
+// Per-run so two concurrent runs (two terminals, or a local run alongside a
+// CI one) can't delete each other's test-build mid-flight. The runner loads
+// this config first, so it seeds the id; global-setup, the workers and the
+// fixture server are all child processes that inherit it through the
+// environment, which keeps them agreed on one directory without IPC.
+const RUN_ID = process.env.MEETREMOTE_TEST_RUN_ID ?? String(process.pid);
+process.env.MEETREMOTE_TEST_RUN_ID = RUN_ID;
+
+const RUNTIME_DIR = path.join(os.tmpdir(), `meetremote-test-core-${RUN_ID}`);
 
 // The already-built extension. This harness never edits it — it only reads
 // it to produce a patched copy (see TEST_BUILD_DIR) for content-script

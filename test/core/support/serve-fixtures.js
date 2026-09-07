@@ -19,6 +19,16 @@ const server = http.createServer((req, res) => {
   });
 });
 
+server.on("error", (err) => {
+  const detail =
+    err.code === "EADDRINUSE"
+      ? `port ${FIXTURE_PORT} is already in use — a fixture server from an aborted run is probably still alive (kill it with: lsof -ti:${FIXTURE_PORT} | xargs kill -9)`
+      : err.message;
+  // eslint-disable-next-line no-console
+  console.error(`fixture server failed to start: ${detail}`);
+  process.exit(1);
+});
+
 server.listen(FIXTURE_PORT, "127.0.0.1", () => {
   // eslint-disable-next-line no-console
   console.log(`fixture server ready on http://127.0.0.1:${FIXTURE_PORT}`);
