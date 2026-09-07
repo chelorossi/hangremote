@@ -20,9 +20,6 @@
     <div role="button" aria-label="Turn on microphone" data-is-muted="true" id="mic-button">mic</div>
     <div role="button" aria-label="Turn on camera" data-is-muted="true" id="cam-button">cam</div>
 
-    <div id="ready" data-ready="false"></div>
-    <div id="ready2" data-ready="false"></div>
-
     <script>
       // Mimics Meet's own app JS: clicking a mute button flips its own
       // data-is-muted attribute. content.js's MutationObserver-based
@@ -47,7 +44,6 @@
       // content.js's meetLocation never leaves "unknown".
       setTimeout(() => {
         document.body.appendChild(document.createElement("span"));
-        document.getElementById("ready").setAttribute("data-ready", "true");
       }, 50);
 
       // content.js's second observer (observerInit, which attaches the
@@ -55,9 +51,9 @@
       // the popup) only starts watching body as a reaction to the mutation
       // above, so it needs a second childList mutation after that to ever
       // fire and actually attach those listeners.
+      // Deliberately no "ready" flag here — see videocall.html for why.
       setTimeout(() => {
         document.body.appendChild(document.createElement("span"));
-        document.getElementById("ready2").setAttribute("data-ready", "true");
       }, 150);
     </script>
   </body>

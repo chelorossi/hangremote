@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MeetRemote test fixture — meeting tab with no content script</title>
+  </head>
+  <body>
+    <!--
+      Stands in for a Meet tab that was already open when the extension was
+      installed, reloaded or updated: the URL still matches the manifest, so
+      extension.js's chrome.tabs.query finds it and the popup shows its
+      controls, but no content script is running in it.
+
+      The DOM is irrelevant — the popup only ever matches on the tab's URL.
+      What makes this fixture special is global-setup.js, which lists it in
+      the test build's content_scripts[0].exclude_matches.
+    -->
+    <div data-panel-id="5">meeting tab whose content script never loaded</div>
+  </body>
+</html>

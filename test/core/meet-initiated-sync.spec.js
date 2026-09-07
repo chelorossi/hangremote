@@ -1,4 +1,4 @@
-import { expect, test } from "./support/extension-context.js";
+import { expect, expectButtonLit, test, waitForContentScriptReady } from "./support/extension-context.js";
 import { FIXTURE_ORIGIN } from "./support/paths.js";
 
 // Covers content.js's *other* sync path: attachListener()/observerInit,
@@ -9,40 +9,37 @@ import { FIXTURE_ORIGIN } from "./support/paths.js";
 // meeting UI rather than through the extension — a real desync the user
 // has hit in prod before. popup-toggle.spec.js only covers the other
 // direction (popup -> Meet); this covers Meet -> popup.
-const ON_COLOR = "rgb(255, 82, 82)";
-
 test.describe("popup stays in sync with Meet-initiated changes", () => {
   test("clicking the real Meet mic button directly (not via the popup) still updates the popup", async ({
     context,
     extensionId,
+    serviceWorker,
   }) => {
     const meetingTab = await context.newPage();
     await meetingTab.goto(`${FIXTURE_ORIGIN}/videocall.html`);
 
-    // #ready2 confirms content.js's *second* MutationObserver cycle ran —
-    // the one that actually attaches the attribute-change listeners onto
-    // the mic/cam buttons (see videocall.html for why one mutation isn't
-    // enough).
-    await expect(
-      meetingTab.locator("#ready2"),
-      "content.js's observerInit never attached its data-is-muted listeners — the fixture's second mutation may not have registered in time"
-    ).toHaveAttribute("data-ready", "true", { timeout: 5_000 });
+    // This test clicks the Meet button directly, so it depends entirely on
+    // observerInit having attached its data-is-muted listeners first —
+    // exactly the thing a DOM-side ready flag cannot tell us.
+    await waitForContentScriptReady(serviceWorker);
 
     const popup = await context.newPage();
     await popup.goto(`chrome-extension://${extensionId}/src/popup.html`);
 
     const popupMic = popup.locator("#div_mic");
     await expect(popupMic).toBeVisible();
-    await expect(popupMic).not.toHaveCSS("background-color", ON_COLOR);
+    await expectButtonLit(popup, "#div_mic", false, "#div_mic started lit before the Meet button was touched");
 
     // This is the key difference from popup-toggle.spec.js: click Meet's
     // own button directly on the meeting tab, never touching the popup.
     await meetingTab.locator("#mic-button").click();
 
-    await expect(
-      popupMic,
+    await expectButtonLit(
+      popup,
+      "#div_mic",
+      true,
       "the popup never reflected a mic state change that happened directly on the Meet button — " +
         "it would show stale state if the user muted from inside Meet instead of the extension"
-    ).toHaveCSS("background-color", ON_COLOR);
+    );
   });
 });

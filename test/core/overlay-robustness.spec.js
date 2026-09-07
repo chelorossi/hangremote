@@ -1,4 +1,10 @@
-import { expect, test } from "./support/extension-context.js";
+import {
+  expect,
+  expectButtonLit,
+  test,
+  waitForContentScriptReady,
+  waitForPopupReady,
+} from "./support/extension-context.js";
 import { FIXTURE_ORIGIN } from "./support/paths.js";
 
 // Real Meet is never static — banners ("You're presenting"), toasts,
@@ -11,16 +17,15 @@ import { FIXTURE_ORIGIN } from "./support/paths.js";
 // pumps a batch of unrelated add/remove mutations (simulating an overlay
 // appearing and disappearing) before exercising the ordinary popup-driven
 // toggle flow, to prove that churn alone doesn't break it.
-const ON_COLOR = "rgb(255, 82, 82)";
-
 test.describe("MutationObserver survives unrelated DOM churn", () => {
   test("an overlay/banner appearing and disappearing doesn't break mic toggle detection", async ({
     context,
     extensionId,
+    serviceWorker,
   }) => {
     const meetingTab = await context.newPage();
     await meetingTab.goto(`${FIXTURE_ORIGIN}/videocall.html`);
-    await expect(meetingTab.locator("#ready2")).toHaveAttribute("data-ready", "true", { timeout: 5_000 });
+    await waitForContentScriptReady(serviceWorker);
 
     // Simulate an overlay banner (e.g. "You're presenting to everyone")
     // appearing, sitting for a moment, then going away — several childList
@@ -45,7 +50,8 @@ test.describe("MutationObserver survives unrelated DOM churn", () => {
 
     const popupMic = popup.locator("#div_mic");
     await expect(popupMic).toBeVisible();
-    await expect(popupMic).not.toHaveCSS("background-color", ON_COLOR);
+    await waitForPopupReady(popup, "#div_mic");
+    await expectButtonLit(popup, "#div_mic", false, "#div_mic started lit before anything was clicked");
 
     const fixtureMic = meetingTab.locator("#mic-button");
     await expect(fixtureMic).toHaveAttribute("data-is-muted", "false");
@@ -57,6 +63,6 @@ test.describe("MutationObserver survives unrelated DOM churn", () => {
       "after unrelated DOM churn (an overlay appearing/disappearing), the popup click no longer reached " +
         "the real Meet mic button — content.js's screen/button detection may have gotten confused by it"
     ).toHaveAttribute("data-is-muted", "true");
-    await expect(popupMic).toHaveCSS("background-color", ON_COLOR);
+    await expectButtonLit(popup, "#div_mic", true, "#div_mic never lit after the toggle round trip");
   });
 });

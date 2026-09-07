@@ -1,4 +1,4 @@
-import { expect, test } from "./support/extension-context.js";
+import { expect, test, waitForContentScriptReady } from "./support/extension-context.js";
 import { FIXTURE_ORIGIN } from "./support/paths.js";
 
 // Covers src/js/extension.js sendToggle()'s "togglePhone" branch: clicking
@@ -8,10 +8,10 @@ import { FIXTURE_ORIGIN } from "./support/paths.js";
 // covered here because Playwright/CDP has no API to dispatch
 // chrome.commands.onCommand — only the popup UI entry point is testable.
 test.describe("leave meeting", () => {
-  test("clicking the popup phone icon closes the meeting tab", async ({ context, extensionId }) => {
+  test("clicking the popup phone icon closes the meeting tab", async ({ context, extensionId, serviceWorker }) => {
     const meetingTab = await context.newPage();
     await meetingTab.goto(`${FIXTURE_ORIGIN}/videocall.html`);
-    await expect(meetingTab.locator("#ready")).toHaveAttribute("data-ready", "true", { timeout: 5_000 });
+    await waitForContentScriptReady(serviceWorker);
 
     const popup = await context.newPage();
     await popup.goto(`chrome-extension://${extensionId}/src/popup.html`);

@@ -36,6 +36,11 @@ export const TEST_BUILD_DIR = path.join(RUNTIME_DIR, "test-build");
 
 export const FIXTURES_DIR = path.resolve(CORE_TEST_DIR, "fixtures");
 
+// The one fixture global-setup.js keeps out of the content-script injection,
+// so tests can exercise what the popup does when a matching tab has no
+// content script listening. See global-setup.js and send-failure.spec.js.
+export const UNINJECTED_FIXTURE = "no-content-script.html";
+
 // Fixed (not ephemeral) so global-setup.js and playwright.config.js's
 // webServer can agree on it without cross-process IPC.
 export const FIXTURE_PORT = 34567;

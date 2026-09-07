@@ -24,9 +24,6 @@
       <button id="cam-button" role="button" aria-label="Turn off camera" data-is-muted="false">cam</button>
     </span>
 
-    <div id="ready" data-ready="false"></div>
-    <div id="ready2" data-ready="false"></div>
-
     <script>
       // See splashscreen.html for why this exists: mimics Meet's own click
       // behavior, and kicks content.js's MutationObserver-based screen
@@ -44,7 +41,6 @@
       // kicks detectScreen() into setting meetLocation (see splashscreen.html).
       setTimeout(() => {
         document.body.appendChild(document.createElement("span"));
-        document.getElementById("ready").setAttribute("data-ready", "true");
       }, 50);
 
       // content.js's *second* observer (observerInit, which attaches the
@@ -52,9 +48,14 @@
       // reach the popup) only starts watching body as a reaction to the
       // first mutation above, so it needs a *second* childList mutation
       // after that to ever fire and actually attach those listeners.
+      // Deliberately no "ready" flag here. A flag set in this same task
+      // would be true before observerInit's callback has even run, let alone
+      // the async chrome.storage.sync.get inside it that actually attaches
+      // the listeners. Tests wait on waitForContentScriptReady() instead,
+      // which reads the write observerInit performs last (see
+      // support/extension-context.js).
       setTimeout(() => {
         document.body.appendChild(document.createElement("span"));
-        document.getElementById("ready2").setAttribute("data-ready", "true");
       }, 150);
     </script>
   </body>
