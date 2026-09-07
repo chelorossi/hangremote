@@ -5,6 +5,7 @@
   "description": "MeetRemote",
   "main": "js/popup.html",
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "del": "^8.0.0",
     "eslint": "^7.32.0",
     "gulp": "^4.0.0",
@@ -18,6 +19,7 @@
     "build": "gulp",
     "postbuild": "zip -r build.zip build",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:core": "playwright test --config=test/core/playwright.config.js",
     "clean": "del build.zip"
   },
   "repository": {

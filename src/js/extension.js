@@ -101,8 +101,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "updateState") {
     var item = message.item;
     systemState[item] = message.state;
-    /* eslint-disable-next-line */
-    chrome.storage.sync.set({ item: message.state });
+    var updatedState = {};
+    updatedState[item] = message.state;
+    chrome.storage.sync.set(updatedState);
 
     if (item === "toggleCam") {
       updateButton("toggleCam", "div_cam", "span_cam");
