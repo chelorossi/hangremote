@@ -9,7 +9,16 @@ var observeDOM = function () {
       currentURL = location.href;
     }
     if (detectScreen()) {
-      observerInit.observe(document.body, { childList: true });
+      // subtree: true because Meet's pre-join screen keeps re-rendering
+      // *inside* its own container and never adds or removes another direct
+      // child of <body> once it has settled. Watching only body's direct
+      // children means observerInit never fires there, so the mic/cam
+      // defaults silently do nothing until the user joins the call.
+      buttonsWired = false;
+      observerInit.observe(document.body, { childList: true, subtree: true });
+      // ...and run once right now, so wiring up does not depend on any
+      // further mutation arriving at all.
+      syncButtons();
     }
   });
 
@@ -17,8 +26,20 @@ var observeDOM = function () {
 };
 observeDOM();
 
-// OBSERVER that executes on Init: the first time it loads
-var observerInit = new MutationObserver(function () {
+// Wires the extension to the real Meet buttons: attaches the data-is-muted
+// listeners, applies the mic/cam defaults and seeds the stored toggle state.
+// Called both from observerInit and directly on screen detection, so it has
+// to be idempotent — muteOnInit() clicks the button, and running twice would
+// toggle it straight back. The guard is set synchronously, before the async
+// storage read, because two mutations can otherwise both get past the checks
+// while the first storage callback is still pending.
+var buttonsWired = false;
+
+var syncButtons = function () {
+  if (buttonsWired) {
+    return;
+  }
+
   var buttons = document.querySelectorAll(
     elements[meetLocation].microphone.selector //eslint-disable-line no-undef
   );
@@ -26,35 +47,39 @@ var observerInit = new MutationObserver(function () {
   var microphone = buttons[0];
   var camera = buttons[1];
 
-  // Keeps DOM Buttons state in sync with the extension state
-  if (microphone && camera) {
-    chrome.storage.sync.get(
-      ["muteMicrophone", "muteCamera"],
-      function (result) {
-        if (
-          microphone.hasAttribute("data-is-muted") &&
-          camera.hasAttribute("data-is-muted")
-        ) {
-          attachListener(microphone, "toggleMic");
-          attachListener(camera, "toggleCam");
-
-          var isMicMuted = microphone.getAttribute("data-is-muted") === "true";
-          muteOnInit(microphone, isMicMuted, result.muteMicrophone);
-
-          var isCamMuted = camera.getAttribute("data-is-muted") === "true";
-          muteOnInit(camera, isCamMuted, result.muteCamera);
-
-          chrome.storage.sync.set({
-            toggleMic: result.muteMicrophone || isMicMuted,
-            toggleCam: result.muteCamera || isCamMuted,
-          });
-
-          observerInit.disconnect();
-        }
-      }
-    );
+  if (!microphone || !camera) {
+    return;
   }
-}); //observerInit
+  if (
+    !microphone.hasAttribute("data-is-muted") ||
+    !camera.hasAttribute("data-is-muted")
+  ) {
+    return;
+  }
+
+  buttonsWired = true;
+  observerInit.disconnect();
+
+  // Keeps DOM Buttons state in sync with the extension state
+  chrome.storage.sync.get(["muteMicrophone", "muteCamera"], function (result) {
+    attachListener(microphone, "toggleMic");
+    attachListener(camera, "toggleCam");
+
+    var isMicMuted = microphone.getAttribute("data-is-muted") === "true";
+    muteOnInit(microphone, isMicMuted, result.muteMicrophone);
+
+    var isCamMuted = camera.getAttribute("data-is-muted") === "true";
+    muteOnInit(camera, isCamMuted, result.muteCamera);
+
+    chrome.storage.sync.set({
+      toggleMic: result.muteMicrophone || isMicMuted,
+      toggleCam: result.muteCamera || isCamMuted,
+    });
+  });
+};
+
+// OBSERVER that executes on Init: the first time it loads
+var observerInit = new MutationObserver(syncButtons); //observerInit
 
 var muteOnInit = function (elem, isElemMuted, hasToBeMuted) {
   if (!isElemMuted && hasToBeMuted) {

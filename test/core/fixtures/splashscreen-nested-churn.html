@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MeetRemote test fixture — splash screen, nested churn only</title>
+  </head>
+  <body>
+    <!--
+      The pre-join screen as it actually behaves in prod: after the render
+      that lets content.js#detectScreen recognise the screen, Meet goes on
+      re-rendering *inside* its container and never adds or removes another
+      direct child of <body>.
+
+      splashscreen.html deliberately fakes a second direct-body mutation so
+      observerInit fires; this fixture does not, which is the difference
+      between the harness passing and the extension working on the real
+      pre-join screen. Everything else is identical.
+    -->
+    <a data-present-landing="false" href="#">landing link</a>
+
+    <div id="app-container">
+      <div role="button" aria-label="Turn on microphone" data-is-muted="false" id="mic-button">mic</div>
+      <div role="button" aria-label="Turn on camera" data-is-muted="false" id="cam-button">cam</div>
+    </div>
+
+    <script>
+      for (const id of ["mic-button", "cam-button"]) {
+        document.getElementById(id).addEventListener("click", (event) => {
+          const el = event.currentTarget;
+          const muted = el.getAttribute("data-is-muted") === "true";
+          el.setAttribute("data-is-muted", String(!muted));
+        });
+      }
+
+      // One direct-body mutation, so content.js's outer observer runs
+      // detectScreen() and recognises the splash screen.
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+      }, 50);
+
+      // From here on, only nested churn — the outer observer sees it
+      // (subtree: true) but observerInit, which is attached to body without
+      // subtree, does not.
+      setTimeout(() => {
+        const container = document.getElementById("app-container");
+        for (let i = 0; i < 5; i++) {
+          container.appendChild(document.createElement("span"));
+        }
+      }, 150);
+      setTimeout(() => {
+        document.getElementById("app-container").querySelectorAll("span").forEach((s) => s.remove());
+      }, 250);
+    </script>
+  </body>
+</html>
