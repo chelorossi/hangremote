@@ -17,8 +17,25 @@
     -->
     <a data-present-landing="false" href="#">landing link</a>
 
-    <div role="button" aria-label="Turn on microphone" data-is-muted="true" id="mic-button">mic</div>
-    <div role="button" aria-label="Turn on camera" data-is-muted="true" id="cam-button">cam</div>
+    <!--
+      Meet's pre-join screen as of 2026-09-14 (captured live): the mic/cam
+      controls are <button data-is-muted> wrapped in a <span>, and the only
+      div[role="button"] elements on the screen are unrelated controls that
+      sit *before* them in DOM order. Until Jan 2025 the mic/cam themselves
+      were the first two div[role="button"] — elements.js still said so, so
+      it was driving "Backgrounds and effects" instead of the microphone.
+      The decoys are load-bearing: without them a positional selector keyed
+      off div[role="button"] passes here and fails in prod.
+    -->
+    <div role="button" aria-label="Backgrounds and effects">effects</div>
+    <div role="button" aria-label="Use Gemini to take notes">gemini</div>
+
+    <span data-is-tooltip-wrapper="true">
+      <button role="button" aria-label="Turn on microphone" data-is-muted="true" id="mic-button">mic</button>
+    </span>
+    <span data-is-tooltip-wrapper="true">
+      <button role="button" aria-label="Turn on camera" data-is-muted="true" id="cam-button">cam</button>
+    </span>
 
     <script>
       // Mimics Meet's own app JS: clicking a mute button flips its own

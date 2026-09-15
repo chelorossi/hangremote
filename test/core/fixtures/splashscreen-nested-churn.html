@@ -19,8 +19,16 @@
     <a data-present-landing="false" href="#">landing link</a>
 
     <div id="app-container">
-      <div role="button" aria-label="Turn on microphone" data-is-muted="false" id="mic-button">mic</div>
-      <div role="button" aria-label="Turn on camera" data-is-muted="false" id="cam-button">cam</div>
+      <!-- Same 2026 shape as splashscreen.html: decoy div[role=button] first. -->
+      <div role="button" aria-label="Backgrounds and effects">effects</div>
+      <div role="button" aria-label="Use Gemini to take notes">gemini</div>
+
+      <span data-is-tooltip-wrapper="true">
+        <button role="button" aria-label="Turn on microphone" data-is-muted="false" id="mic-button">mic</button>
+      </span>
+      <span data-is-tooltip-wrapper="true">
+        <button role="button" aria-label="Turn on camera" data-is-muted="false" id="cam-button">cam</button>
+      </span>
     </div>
 
     <script>
