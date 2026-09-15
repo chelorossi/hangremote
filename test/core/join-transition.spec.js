@@ -29,15 +29,18 @@ test.describe("joining the call", () => {
 
     await meetingTab.evaluate(() => window.join());
 
-    await expect(
-      meetingTab.locator("#mic-button"),
-      "the mic stayed unmuted after joining — the muteMicrophone default did not win over the manual " +
-        "pre-join change, so the user enters the call live"
-    ).toHaveAttribute("data-is-muted", "true", { timeout: 10_000 });
-    await expect(
-      meetingTab.locator("#cam-button"),
-      "the camera stayed on after joining — same cause as the mic"
-    ).toHaveAttribute("data-is-muted", "true", { timeout: 10_000 });
+    // Assert the *real* state, not the attribute: Meet's freshly swapped-in
+    // controls read data-is-muted="false" for ~200ms regardless of what the
+    // user is entering with, so the attribute is not the truth in this window.
+    await expect
+      .poll(() => meetingTab.evaluate(() => window.realState()), {
+        message:
+          "wrong mic/cam state after joining. Deciding from data-is-muted while Meet's in-call controls " +
+          "are still stale makes muteOnInit click from a false reading, which inverts the state the user " +
+          "actually entered with instead of applying the defaults",
+        timeout: 10_000,
+      })
+      .toEqual({ "mic-button": true, "cam-button": true });
   });
 
   test("an open popup follows the state change instead of going stale", async ({

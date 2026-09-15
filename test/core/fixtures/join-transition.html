@@ -28,29 +28,41 @@
     </div>
 
     <script>
-      function wireClicks(root) {
-        for (const id of ["mic-button", "cam-button"]) {
-          const el = root.querySelector("#" + id);
-          if (!el) continue;
+      // Displayed state (data-is-muted) versus real state. Captured from prod
+      // on 2026-09-14: when Meet swaps in the in-call controls they read
+      // data-is-muted="false" for a moment regardless of what the user is
+      // actually entering with, and only sync to the real state ~200ms later.
+      // A click acts on the *real* state, not on the stale attribute — which
+      // is why deciding from the attribute in that window inverts it.
+      const real = { "mic-button": false, "cam-button": false };
+      let settleTimer = null;
+
+      function paint() {
+        for (const id of Object.keys(real)) {
+          const el = document.getElementById(id);
+          if (el) el.setAttribute("data-is-muted", String(real[id]));
+        }
+      }
+
+      function wireClicks() {
+        for (const id of Object.keys(real)) {
+          const el = document.getElementById(id);
+          if (!el || el.dataset.wired) continue;
+          el.dataset.wired = "1";
           el.addEventListener("click", (event) => {
-            const b = event.currentTarget;
-            b.setAttribute("data-is-muted", String(b.getAttribute("data-is-muted") !== "true"));
+            const which = event.currentTarget.id;
+            real[which] = !real[which];
+            setTimeout(paint, 30);
           });
         }
       }
-      wireClicks(document);
+      wireClicks();
 
       setTimeout(() => {
         document.body.appendChild(document.createElement("span"));
       }, 50);
 
-      // Joining: data-present-landing goes away, data-panel-id appears (so
-      // detectScreen flips to "videocall"), and the controls are rebuilt as
-      // fresh nodes carrying whatever state the user left them in.
       window.join = () => {
-        const micMuted = document.getElementById("mic-button").getAttribute("data-is-muted");
-        const camMuted = document.getElementById("cam-button").getAttribute("data-is-muted");
-
         document.getElementById("landing").remove();
 
         const panel = document.createElement("div");
@@ -58,16 +70,20 @@
         panel.textContent = "in call";
         document.body.appendChild(panel);
 
+        // Fresh nodes, both reading "false" no matter the real state.
         const controls = document.getElementById("controls");
         controls.innerHTML =
-          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off microphone" data-is-muted="' +
-          micMuted +
-          '" id="mic-button">mic</button></span>' +
-          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off camera" data-is-muted="' +
-          camMuted +
-          '" id="cam-button">cam</button></span>';
-        wireClicks(controls);
+          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off microphone" data-is-muted="false" id="mic-button">mic</button></span>' +
+          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off camera" data-is-muted="false" id="cam-button">cam</button></span>';
+        wireClicks();
+
+        // Meet catches the controls up to the real state shortly after.
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(paint, 250);
       };
+
+      // Test hook: the real state, which is what the user actually gets.
+      window.realState = () => ({ ...real });
     </script>
   </body>
 </html>

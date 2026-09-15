@@ -35,6 +35,12 @@ observeDOM();
 // while the first storage callback is still pending.
 var buttonsWired = false;
 
+// The very first wiring happens on a page that has finished rendering, so the
+// buttons' data-is-muted is the truth there. Later wirings happen on a screen
+// change, and Meet swaps in the new controls reading data-is-muted="false"
+// regardless of the state being carried over, syncing them ~200ms later.
+var initialWiring = true;
+
 var syncButtons = function () {
   if (buttonsWired) {
     return;
@@ -60,22 +66,38 @@ var syncButtons = function () {
   buttonsWired = true;
   observerInit.disconnect();
 
+  var isInitialWiring = initialWiring;
+  initialWiring = false;
+
   // Keeps DOM Buttons state in sync with the extension state
-  chrome.storage.sync.get(["muteMicrophone", "muteCamera"], function (result) {
-    attachListener(microphone, "toggleMic");
-    attachListener(camera, "toggleCam");
+  chrome.storage.sync.get(
+    ["muteMicrophone", "muteCamera", "toggleMic", "toggleCam"],
+    function (result) {
+      attachListener(microphone, "toggleMic");
+      attachListener(camera, "toggleCam");
 
-    var isMicMuted = microphone.getAttribute("data-is-muted") === "true";
-    muteOnInit(microphone, isMicMuted, result.muteMicrophone);
+      // muteOnInit clicks, and a click acts on the real state rather than on
+      // whatever the attribute currently says — so reading a stale attribute
+      // does not just skip the default, it inverts what the user chose. On a
+      // screen change the state we tracked from the screen we just left is
+      // what Meet carries into the call, and it is trustworthy where the
+      // freshly rendered attribute is not.
+      var isMicMuted = isInitialWiring
+        ? microphone.getAttribute("data-is-muted") === "true"
+        : result.toggleMic === true;
+      muteOnInit(microphone, isMicMuted, result.muteMicrophone);
 
-    var isCamMuted = camera.getAttribute("data-is-muted") === "true";
-    muteOnInit(camera, isCamMuted, result.muteCamera);
+      var isCamMuted = isInitialWiring
+        ? camera.getAttribute("data-is-muted") === "true"
+        : result.toggleCam === true;
+      muteOnInit(camera, isCamMuted, result.muteCamera);
 
-    chrome.storage.sync.set({
-      toggleMic: result.muteMicrophone || isMicMuted,
-      toggleCam: result.muteCamera || isCamMuted,
-    });
-  });
+      chrome.storage.sync.set({
+        toggleMic: result.muteMicrophone || isMicMuted,
+        toggleCam: result.muteCamera || isCamMuted,
+      });
+    }
+  );
 };
 
 // OBSERVER that executes on Init: the first time it loads
