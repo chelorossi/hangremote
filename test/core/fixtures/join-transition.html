@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MeetRemote test fixture — pre-join then joining the call</title>
+  </head>
+  <body>
+    <!--
+      The one transition no other fixture covers: pre-join -> in-call. Meet
+      does not keep the pre-join controls around, it re-renders the page, so
+      window.join() below replaces the mic/cam with *new* nodes carrying the
+      state the user left them in. Any listener content.js attached on the
+      pre-join screen is on a detached node afterwards, which is what makes
+      re-wiring on screen change load-bearing.
+    -->
+    <a id="landing" data-present-landing="false" href="#">landing link</a>
+
+    <div role="button" aria-label="Backgrounds and effects">effects</div>
+    <div role="button" aria-label="Use Gemini to take notes">gemini</div>
+
+    <div id="controls">
+      <span data-is-tooltip-wrapper="true">
+        <button role="button" aria-label="Turn on microphone" data-is-muted="false" id="mic-button">mic</button>
+      </span>
+      <span data-is-tooltip-wrapper="true">
+        <button role="button" aria-label="Turn on camera" data-is-muted="false" id="cam-button">cam</button>
+      </span>
+    </div>
+
+    <script>
+      function wireClicks(root) {
+        for (const id of ["mic-button", "cam-button"]) {
+          const el = root.querySelector("#" + id);
+          if (!el) continue;
+          el.addEventListener("click", (event) => {
+            const b = event.currentTarget;
+            b.setAttribute("data-is-muted", String(b.getAttribute("data-is-muted") !== "true"));
+          });
+        }
+      }
+      wireClicks(document);
+
+      setTimeout(() => {
+        document.body.appendChild(document.createElement("span"));
+      }, 50);
+
+      // Joining: data-present-landing goes away, data-panel-id appears (so
+      // detectScreen flips to "videocall"), and the controls are rebuilt as
+      // fresh nodes carrying whatever state the user left them in.
+      window.join = () => {
+        const micMuted = document.getElementById("mic-button").getAttribute("data-is-muted");
+        const camMuted = document.getElementById("cam-button").getAttribute("data-is-muted");
+
+        document.getElementById("landing").remove();
+
+        const panel = document.createElement("div");
+        panel.setAttribute("data-panel-id", "5");
+        panel.textContent = "in call";
+        document.body.appendChild(panel);
+
+        const controls = document.getElementById("controls");
+        controls.innerHTML =
+          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off microphone" data-is-muted="' +
+          micMuted +
+          '" id="mic-button">mic</button></span>' +
+          '<span data-is-tooltip-wrapper="true"><button role="button" aria-label="Turn off camera" data-is-muted="' +
+          camMuted +
+          '" id="cam-button">cam</button></span>';
+        wireClicks(controls);
+      };
+    </script>
+  </body>
+</html>
